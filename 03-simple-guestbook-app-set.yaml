@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: main
+spec:
+  generators:
+  - list:
+      elements:
+      - namespace: foo
+      - namespace: bar
+      - namespace: baz
+  template:
+    metadata:
+      name: "guestbook-{{namespace}}"
+      namespace: argocd
+    spec:
+      destination:
+        namespace: "{{namespace}}"
+        server: https://kubernetes.default.svc
+      project: default
+      source:
+        path: guestbook
+        repoURL: https://github.com/argoproj/argocd-example-apps.git
+      syncPolicy:
+        automated:
+          prune: true

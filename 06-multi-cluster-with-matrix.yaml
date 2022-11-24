@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: main
+spec:
+  generators:
+    # Generator for apps that should deploy to all cluster.
+    - matrix:
+        generators:
+          - clusters: {} # for all clusters
+          - list:
+              elements:
+                - appNamespace: default
+                - appNamespace: other-namespace
+  template:
+    metadata:
+      name: "{{name}}-{{appNamespace}}-guestbook-dev"
+      namespace: argocd
+    spec:
+      destination:
+        namespace: "{{appNamespace}}"
+        server: "{{server}}"
+      project: default
+      source:
+        path: guestbook
+        repoURL: https://github.com/argoproj/argocd-example-apps.git
+      syncPolicy:
+        automated:
+          prune: true
+        syncOptions:
+            - CreateNamespace=true

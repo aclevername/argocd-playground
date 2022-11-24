@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: main
+spec:
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          env: dev # looks for secrets with lavel env: dev
+  template:
+    metadata:
+      name: "{{name}}-guestbook-dev"
+      namespace: argocd
+    spec:
+      destination:
+        namespace: default
+        server: "{{server}}"
+      project: default
+      source:
+        path: guestbook
+        repoURL: https://github.com/argoproj/argocd-example-apps.git
+      syncPolicy:
+        automated:
+          prune: true
